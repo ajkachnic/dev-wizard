@@ -1,0 +1,10 @@
+FROM node
+
+WORKDIR /usr/src/app
+COPY package.json ./
+RUN npm install
+COPY . .
+
+{{ if .Port }}EXPOSE {{ .Port }} {{end}}
+
+CMD ["node", "{{ .Main }}"]
