@@ -1,0 +1,21 @@
+name: dev-wizard
+version: "0.2.2"
+summary: A simple collection of Dockerfile templates
+description: |
+  dev-wizard is a CLI interface that contains many templates for Dockerfiles
+
+confinement: devmode
+base: core18
+
+parts:
+  dev-wizard:
+    plugin: go
+    go-importpath: github.com/ajkachnic/dev-wizard
+    source: https://github.com/ajkachnic/dev-wizard
+    source-type: git
+    build-packages:
+      - gcc
+
+apps:
+  dev-wizard:
+    command: ./dev-wizard
