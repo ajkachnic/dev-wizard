@@ -1,0 +1,34 @@
+{
+  "enviornments": [
+    {
+      "name": "node",
+      "dockerName": "node",
+      "dockerFile": "FROM node\nWORKDIR \/usr\/src\/app\nCOPY package.json .\/\nRUN npm install\nCOPY . .\n{{ if .Port }}EXPOSE {{ .Port }}\n{{end}}CMD [\"node\", \"{{ .Main }}\"]"
+    },
+    {
+      "name": "python",
+      "dockerName": "python",
+      "dockerFile": "FROM python:3\n\nWORKDIR \/usr\/src\/app\n\nCOPY requirements.txt .\/\nRUN pip install --no-cache-dir -r requirements.txt\n\nCOPY . .\n{{ if .Port }}EXPOSE {{ .Port }}\n{{end}}CMD [ \"python\", \".\/{{ .Main }}\" ]"
+    },
+    {
+      "name": "Go",
+      "dockerName": "golang",
+      "dockerFile": "FROM golang:1.13\n\nWORKDIR \/go\/src\/app\nCOPY . .\n{{ if .Port }}EXPOSE {{ .Port }}\n{{end}}RUN go get -d -v .\/...\nRUN go install -v .\/...\n\nCMD [\"app\"]"
+    },
+    {
+      "name": "ruby",
+      "dockerName": "ruby",
+      "dockerFile": "FROM ruby\n\n# throw errors if Gemfile has been modified since Gemfile.lock\nRUN bundle config --global frozen 1\n\nWORKDIR /usr/src/app\n\nCOPY Gemfile Gemfile.lock ./\nRUN bundle install\n\nCOPY . .\n{{ if .Port }}EXPOSE {{ .Port }}\n{{end}}\nCMD [\"./{{ .Main }}\"]"
+    },
+    {
+      "name": "php",
+      "dockerName": "php",
+      "dockerFile": "FROM php:7.4-cli\nCOPY . \/usr\/src\/myapp\nWORKDIR \/usr\/src\/myapp\nCMD [ \"php\", \".\/{{ .Main }}\" ]"
+    },
+    {
+      "name": "java",
+      "dockerName": "openjdk",
+      "dockerFile": "FROM openjdk:7\nCOPY . \/usr\/src\/myapp\nWORKDIR \/usr\/src\/myapp\nRUN javac {{ .MainExt }}\nCMD [\"java\", \"{{ .Main }}\"]"
+    }
+  ]
+}
