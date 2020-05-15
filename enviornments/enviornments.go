@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"bytes"
 	"strings"
+	"net/http"
 )
 
 type Env struct {
@@ -15,38 +16,44 @@ type Env struct {
 	id string
 	container string
 }
-type envFile struct {
-	Enviornments []enviornment `json:"enviornments"`
-}
-type enviornment struct { 
-	Name string `json:"name"`
-	DockerName string `json:"dockerName"`
-	DockerFile string `json:"dockerFile"`
-}
+
 type FileData struct {
 	Port int
 	Main string
 	MainExt string
 }
+type GitHubResponse []GitHubResponseFile
+type GitHubResponseFile struct {
+	Name string `json:"name"`
+	DownloadUrl string `json:"download_url"`
+}
+
 func CreateEnv(name string) Env {
 	return Env{}
 }
 func BuildDockerfile(dockerfile string, fileData FileData) {
-	path := "/home/andrew/dev/personal/projects/1ProductAWeek/week2/code/enviornments/enviornments.json"
-	data, err := ioutil.ReadFile(path)
+	url := "https://api.github.com/repos/ajkachnic/dev-wizard/contents/templates"
+	data, err := http.Get(url)
 	if err != nil {
 		fmt.Print(err)
 	}
-	
-	var file envFile
-	err = json.Unmarshal(data, &file)
-	if err != nil {
-		fmt.Print(err)
-	}
-	index := search(file.Enviornments, dockerfile)
+	defer data.Body.Close()
+	body, err := ioutil.ReadAll(data.Body)
 
-	if index != -1 {
-		t := template.Must(template.New("dockerfile").Parse(file.Enviornments[index].DockerFile))
+	var result GitHubResponse
+	json.Unmarshal(body, &result)
+
+	index := search(result, dockerfile)
+
+	if index != 1 {
+		data, err = http.Get(result[index].DownloadUrl)
+		if err != nil {
+			fmt.Print(err)
+		}
+		defer data.Body.Close()
+		body, err = ioutil.ReadAll(data.Body)
+
+		t := template.Must(template.New("dockerfile").Parse(string(body)))
 	
 		var templated bytes.Buffer
 		t.Execute(&templated, fileData)
@@ -54,11 +61,8 @@ func BuildDockerfile(dockerfile string, fileData FileData) {
 		fmt.Println(templated.String())
 	}
 }
-// func main() {
 
-// }
-
-func search(arr []enviornment, str string) int {
+func search(arr GitHubResponse, str string) int {
 	for index, item := range arr {
 		if strings.ToLower(item.Name) == str {
 			return index
