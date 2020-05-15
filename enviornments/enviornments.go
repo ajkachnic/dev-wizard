@@ -3,11 +3,10 @@ package enviornments
 import (
 	"text/template"
 	"io/ioutil"
-	"fmt"
-	"encoding/json"
 	"bytes"
 	"strings"
 	"net/http"
+	"log"
 )
 
 type Env struct {
@@ -31,35 +30,25 @@ type GitHubResponseFile struct {
 func CreateEnv(name string) Env {
 	return Env{}
 }
-func BuildDockerfile(dockerfile string, fileData FileData) {
-	url := "https://api.github.com/repos/ajkachnic/dev-wizard/contents/templates"
-	data, err := http.Get(url)
-	if err != nil {
-		fmt.Print(err)
-	}
-	defer data.Body.Close()
-	body, err := ioutil.ReadAll(data.Body)
-
-	var result GitHubResponse
-	json.Unmarshal(body, &result)
-
-	index := search(result, dockerfile)
+func BuildDockerfile(response GitHubResponse,dockerfile string, fileData FileData) string {
+	index := search(response, dockerfile)
 
 	if index != 1 {
-		data, err = http.Get(result[index].DownloadUrl)
+		data, err := http.Get(response[index].DownloadUrl)
 		if err != nil {
-			fmt.Print(err)
+			log.Fatal(err)
 		}
 		defer data.Body.Close()
-		body, err = ioutil.ReadAll(data.Body)
+		body, err := ioutil.ReadAll(data.Body)
 
 		t := template.Must(template.New("dockerfile").Parse(string(body)))
 	
 		var templated bytes.Buffer
 		t.Execute(&templated, fileData)
 	
-		fmt.Println(templated.String())
+		return templated.String()
 	}
+	return ""
 }
 
 func search(arr GitHubResponse, str string) int {
