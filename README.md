@@ -19,7 +19,7 @@ Alternatively, if you are on linux, you can install via the snap store with this
 
 ```sh
 # Linux install
-snap install dev-wizard
+snap install dev-wizard --classic
 ```
 
 ## Usage
