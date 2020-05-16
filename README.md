@@ -11,8 +11,6 @@
 
 > A simple collection of Dockerfile templates
 
-### 🏠 [Homepage](https://dev-wizard.now.sh)
-
 ## Install
 
 Download the latest [release]() for your operating system. Then, extract the tarball. You can then run the binary.
