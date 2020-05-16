@@ -4,7 +4,7 @@ summary: A simple collection of Dockerfile templates
 description: |
   dev-wizard is a CLI interface that contains many templates for Dockerfiles
 
-confinement: devmode
+confinement: classic
 base: core18
 
 parts:
