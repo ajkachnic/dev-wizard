@@ -15,13 +15,6 @@
 
 Download the latest [release](https://github.com/ajkachnic/dev-wizard/releases) for your operating system. Then, extract the tarball. You can then run the binary.
 
-Alternatively, if you are on linux, you can install via the snap store with this command
-
-```sh
-# Linux install
-snap install dev-wizard --classic
-```
-
 ## Usage
 
 ```sh
